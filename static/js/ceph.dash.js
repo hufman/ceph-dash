@@ -44,6 +44,12 @@ $(function () {
             }
         }
     };
+    var provisioned_options = Object.create(gauge_options);
+    provisioned_options.title = {
+         text: 'Cluster storage provisioned',
+         font: { size: 18, color: '#c8c8c8', family: 'Helvetica' },
+         position: 'bottom-center'
+    }
 
     //
     // Pie chart configuration options
@@ -177,6 +183,13 @@ $(function () {
                 value: percentUsed
             }));
             $("#utilization_info").html(fmtBytes(bytesUsed) + " / " + fmtBytes(bytesTotal) + " (" + percentUsed + "%)");
+
+            var provUsed = data['provisioned_stats']['_TOTAL_'];
+            var provPercent = Math.round((provUsed / bytesTotal) * 100);
+            $("#provutilization").dxCircularGauge($.extend(true, {}, provisioned_options, {
+                value: provPercent
+            }));
+            $("#provutilization_info").html(fmtBytes(provUsed) + " / " + fmtBytes(bytesTotal) + " (" + provPercent + "%)");
 
             // update placement group chart
             var chart = $("#pg_status").dxPieChart("instance");

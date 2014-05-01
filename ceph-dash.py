@@ -29,6 +29,8 @@ from rados import Error as RadosError
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
+import cephstats_prov
+
 
 class CephApiConfig(dict):
     """ loads the json configuration file """
@@ -76,11 +78,15 @@ class CephStatusView(MethodView):
             ret, buf, err = cluster.mon_command(json.dumps(command), '', timeout=5)
             if ret != 0:
                 abort(500, err)
+            data = json.loads(buf)
+
+            pool_provisioned = cephstats_prov.get_provisioned_size(cluster)
+            data['provisioned_stats'] = pool_provisioned
 
             if request.mimetype == 'application/json':
-                return jsonify(json.loads(buf))
+                return jsonify(data)
             else:
-                return render_template('status.html', data=json.loads(buf))
+                return render_template('status.html', data=data)
 
 
 class CephAPI(Flask):
