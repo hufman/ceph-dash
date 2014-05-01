@@ -39,7 +39,7 @@ def get_provisioned_size(cluster):
 		with cluster.open_ioctx(poolname) as ioctx:
 			rbd_inst = rbd.RBD()
 			for rbdname in rbd_inst.list(ioctx):
-				with rbd.Image(ioctx, rbdname) as image:
+				with rbd.Image(ioctx, rbdname, read_only=True) as image:
 					image_size = image.size()
 					real_image_size = image_size * pool_size
 					poolsum += real_image_size
